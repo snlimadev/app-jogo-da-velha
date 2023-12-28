@@ -1,3 +1,5 @@
+import { Alert } from 'react-native';
+
 const conjuntosVencedores = [
   [0, 1, 2],
   [3, 4, 5],
@@ -57,13 +59,16 @@ export function validaResultado(celula, setVencedor, setFimDaPartida, corCelula,
 //#endregion
 
 //#region Função para alterar a pontuação
-export function alteraPontuacao(vencedor, pontuacaoJogadorX, setPontuacaoJogadorX, pontuacaoJogadorO, setPontuacaoJogadorO) {
+export function alteraPontuacao(vencedor, setPontuacaoJogadorX, setPontuacaoJogadorO, setEmpates) {
   switch (vencedor) {
     case 'Vencedor: Jogador X':
-      setPontuacaoJogadorX(pontuacaoJogadorX + 1);
+      setPontuacaoJogadorX((pontuacaoJogadorX) => pontuacaoJogadorX + 1);
       break;
     case 'Vencedor: Jogador O':
-      setPontuacaoJogadorO(pontuacaoJogadorO + 1);
+      setPontuacaoJogadorO((pontuacaoJogadorO) => pontuacaoJogadorO + 1);
+      break;
+    case 'Empate':
+      setEmpates((empates) => empates + 1);
       break;
     default:
       break;
@@ -168,4 +173,103 @@ export function fazJogadaDoComputador(celula, setCelula, jogador, setJogador, fi
     //#endregion
   }
 }
+//#endregion
+
+//#region Funções do modo online
+export function handleEventosWebSocket(
+  ws,
+  setReadyState,
+  handleCriarOuEntrarNaSala,
+  handleJogadas,
+  navigate
+) {
+  if (ws) {
+    ws.onopen = () => {
+      setReadyState('OPEN');
+      handleCriarOuEntrarNaSala();
+    };
+
+    ws.onclose = () => {
+      setReadyState('CLOSED');
+      navigate('Crie/entre em uma sala');
+    };
+
+    ws.onerror = () => {
+      Alert.alert(
+        'A conexão com o servidor foi perdida ou expirou',
+        'Por favor, verifique sua conexão com a internet ' +
+        'e tente novamente mais tarde.'
+      );
+    };
+
+    ws.onmessage = (e) => {
+      handleJogadas(e);
+    };
+  }
+}
+
+export function criarOuEntrarNaSala(action, user, roomCode, ws) {
+  const mensagem = {
+    action: action,
+    user: user,
+    roomCode: roomCode,
+    maxClients: 2
+  };
+
+  ws.send(JSON.stringify(mensagem));
+};
+
+export function fazerJogada(jogada, ws, readyState) {
+  if (readyState === 'OPEN') {
+    const mensagem = {
+      text: jogada
+    };
+
+    if (ws) {
+      ws.send(JSON.stringify(mensagem));
+    }
+  }
+};
+
+export function handleRodadasDoJogo(
+  e,
+  setJogoComecou,
+  setJogadorAtual,
+  setJogadaAtual,
+  navigate
+) {
+  try {
+    const mensagem = JSON.parse(e.data);
+    const jogadorAtual = mensagem.sender;
+    const jogadaAtual = mensagem.message;
+    const evento = mensagem.event;
+    const erro = mensagem.error;
+
+    if (jogadorAtual && jogadaAtual) {
+      setJogadorAtual(jogadorAtual);
+      setJogadaAtual(jogadaAtual);
+    } else if (evento) {
+      if (evento === 'Jogador O joined the room') {
+        setJogoComecou(true);
+      } else if (evento.endsWith('left the room')) {
+        Alert.alert(
+          'Aviso',
+          'O adversário saiu do jogo.'
+        );
+
+        navigate('Crie/entre em uma sala');
+      }
+    } else if (erro) {
+      Alert.alert(
+        'A conexão com o servidor foi perdida ou expirou',
+        'Por favor, verifique sua conexão com a internet ' +
+        'e tente novamente mais tarde.'
+      );
+
+      navigate('Crie/entre em uma sala');
+    }
+  } catch (error) {
+    console.error('Erro: ', error);
+  }
+};
 //#endregion
