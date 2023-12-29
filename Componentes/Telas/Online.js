@@ -51,13 +51,13 @@ export default function Online(props) {
   };
 
   const handleFazerJogada = (jogada) => {
-    setDesativado(true);
-    fazerJogada(jogada.toString(), ws, readyState);
+    if (celula[jogada] === '') {
+      setDesativado(true);
+      fazerJogada(jogada.toString(), ws, readyState);
+    }
   };
 
   const handleJogadas = (e) => {
-    setDesativado(false);
-
     handleRodadasDoJogo(
       e,
       setJogoComecou,
