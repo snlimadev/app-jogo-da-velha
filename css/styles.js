@@ -15,12 +15,23 @@ const styles = StyleSheet.create({
   },
 
   estiloBotao: {
-    padding: 10,
+    paddingBottom: 20,
+  },
+
+  estiloBotaoContainer: {
+    paddingHorizontal: 10,
   },
 
   titulo: {
     fontSize: 40,
     fontWeight: 'bold',
+  },
+
+  textoBoasVindas: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingBottom: 20,
   },
 
   textoVencedor: {

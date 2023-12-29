@@ -1,35 +1,40 @@
-import { View, Button, ImageBackground } from 'react-native';
+import { View, Button, ScrollView, Text } from 'react-native';
 
 import styles from '../../../css/styles';
-import imagemDeFundo from '../../../assets/imagemDeFundo.png';
 
 export default function TelaInicial(props) {
   return (
-    <ImageBackground source={imagemDeFundo} resizeMode='cover' style={styles.container}>
-      <View>
+    <ScrollView contentContainerStyle={styles.containerScrollView}>
+      <View style={styles.container}>
 
-        <View style={styles.estiloBotao}>
-          <Button
-            title='Um Jogador'
-            onPress={() => props.navigation.navigate('Um Jogador')}
-          />
-        </View>
+        <Text style={styles.textoBoasVindas}>
+          Bem-vindo ao Jogo da Velha!
+        </Text>
 
-        <View style={styles.estiloBotao}>
-          <Button
-            title='Dois Jogadores'
-            onPress={() => props.navigation.navigate('Dois Jogadores')}
-          />
-        </View>
+        <View>
+          <View style={styles.estiloBotao}>
+            <Button
+              title='Um Jogador'
+              onPress={() => props.navigation.navigate('Um Jogador')}
+            />
+          </View>
 
-        <View style={styles.estiloBotao}>
-          <Button
-            title='Online'
-            onPress={() => props.navigation.navigate('Crie/entre em uma sala')}
-          />
+          <View style={styles.estiloBotao}>
+            <Button
+              title='Dois Jogadores'
+              onPress={() => props.navigation.navigate('Dois Jogadores')}
+            />
+          </View>
+
+          <View>
+            <Button
+              title='Online'
+              onPress={() => props.navigation.navigate('Crie/entre em uma sala')}
+            />
+          </View>
         </View>
 
       </View>
-    </ImageBackground>
+    </ScrollView>
   );
 }

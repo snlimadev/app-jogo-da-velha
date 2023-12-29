@@ -54,11 +54,11 @@ export default function Lobby(props) {
               O criador da sala será o Jogador X.
             </Text>
 
-            <Text style={[styles.textoDestacado, styles.margemInferior]}>
+            <Text style={[styles.textoDestacado, styles.margemInferiorMenor]}>
               Quem entrar na sala será o Jogador O.
             </Text>
 
-            <View>
+            <View style={styles.margemSuperior}>
               <View style={styles.estiloBotao}>
                 <Button
                   title='Criar uma sala'
@@ -66,7 +66,7 @@ export default function Lobby(props) {
                 />
               </View>
 
-              <View style={styles.estiloBotao}>
+              <View>
                 <Button
                   title='Entrar em uma sala'
                   onPress={alternarVisibilidadeCamposEntrada}
@@ -82,7 +82,7 @@ export default function Lobby(props) {
               </Text>
             </View>
 
-            <View style={[styles.linha, styles.margemInferior]}>
+            <View style={[styles.linha, styles.margemInferiorMenor]}>
               <TextInput
                 textAlign='center'
                 keyboardType='number-pad'
@@ -98,8 +98,8 @@ export default function Lobby(props) {
               />
             </View>
 
-            <View style={styles.linha}>
-              <View style={styles.estiloBotao}>
+            <View style={[styles.linha, styles.margemSuperior]}>
+              <View style={styles.estiloBotaoContainer}>
                 <Button
                   title='Cancelar'
                   onPress={alternarVisibilidadeCamposEntrada}
@@ -107,7 +107,7 @@ export default function Lobby(props) {
                 />
               </View>
 
-              <View style={styles.estiloBotao}>
+              <View style={styles.estiloBotaoContainer}>
                 <Button
                   title='Entrar'
                   onPress={handleEntrarNaSala}
