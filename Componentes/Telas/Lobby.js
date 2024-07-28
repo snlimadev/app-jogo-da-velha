@@ -58,7 +58,7 @@ export default function Lobby(props) {
               Quem entrar na sala será o Jogador O.
             </Text>
 
-            <View style={styles.margemSuperior}>
+            <View style={[styles.margemSuperior, styles.containerTelaInicial]}>
               <View style={styles.estiloBotao}>
                 <Button
                   title='Criar uma sala'
