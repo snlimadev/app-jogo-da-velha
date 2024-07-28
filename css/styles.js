@@ -34,6 +34,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 
+  containerTelaInicial: {
+    width: '90%',
+    paddingHorizontal: 20,
+  },
+
   textoVencedor: {
     color: '#daa520',
     fontSize: 25,

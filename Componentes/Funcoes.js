@@ -263,7 +263,8 @@ export function handleRodadasDoJogo(
       Alert.alert(
         'A conexão com o servidor foi perdida ou expirou',
         'Por favor, verifique sua conexão com a internet ' +
-        'e tente novamente mais tarde.'
+        'e tente novamente mais tarde.\n\n' +
+        'Detalhes do erro: ' + erro
       );
 
       navigate('Crie/entre em uma sala');

@@ -11,7 +11,7 @@ export default function TelaInicial(props) {
           Bem-vindo ao Jogo da Velha!
         </Text>
 
-        <View>
+        <View style={styles.containerTelaInicial}>
           <View style={styles.estiloBotao}>
             <Button
               title='Um Jogador'
