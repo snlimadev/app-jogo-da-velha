@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -10,9 +11,9 @@ import Online from './Componentes/Telas/Online';
 const Stack = createStackNavigator();
 
 export default function App() {
-
   return (
     <NavigationContainer>
+      <StatusBar style='dark' />
 
       <Stack.Navigator>
         <Stack.Screen name="Escolha o modo de jogo" component={TelaInicial} />
@@ -21,8 +22,6 @@ export default function App() {
         <Stack.Screen name="Crie/entre em uma sala" component={Lobby} />
         <Stack.Screen name="Online" component={Online} />
       </Stack.Navigator>
-
     </NavigationContainer>
   );
-
 }
