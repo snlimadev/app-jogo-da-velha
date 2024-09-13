@@ -2,7 +2,7 @@
   "expo": {
     "name": "Jogo da Velha",
     "slug": "jogo-da-velha",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.snlimadev.jogodavelha",
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
@@ -39,7 +39,7 @@
         {
           "android": {
             "compileSdkVersion": 33,
-            "targetSdkVersion": 34,
+            "targetSdkVersion": 35,
             "buildToolsVersion": "33.0.0"
           },
           "ios": {
