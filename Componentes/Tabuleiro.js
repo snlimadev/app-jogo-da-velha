@@ -1,65 +1,59 @@
-import { Text, ScrollView, View, Pressable, Button } from 'react-native';
+import { Text, ScrollView, View, Pressable } from 'react-native';
+import { useTheme } from '@rneui/themed';
 
+import Placar from './Placar';
 import styles from '../css/styles';
 
 export default function Tabuleiro(props) {
+  const { theme } = useTheme();
+
+  const obterCorPorIndice = (indice) => {
+    if (props.corCelula[indice] === 'black') {
+      return theme.colors.black;
+    } else {
+      return theme.colors.primary;
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
-      <View style={styles.container}>
 
-        <Text style={[styles.titulo, styles.margemInferior]}>
-          Jogo da Velha
-        </Text>
+      <Placar
+        pontuacaoJogadorX={props.pontuacaoJogadorX}
+        pontuacaoJogadorO={props.pontuacaoJogadorO}
+        empates={props.empates}
+        vencedor={props.vencedor}
+        fimDaPartida={props.fimDaPartida}
+        online={props.online}
+        limpaTabuleiro={props.limpaTabuleiro}
+        jogador={props.jogador}
+      />
 
-        <Text style={styles.margemInferiorMenor}>
-          Jogador X <Text style={styles.placar}>{props.pontuacaoJogadorX} </Text>
-          vs.
-          <Text style={styles.placar}> {props.pontuacaoJogadorO}</Text> Jogador O
-        </Text>
-
-        <Text style={styles.margemInferior}>
-          <Text style={styles.placar}>{props.empates}</Text> Empates
-        </Text>
-
-        {(props.fimDaPartida) && (
-          <>
-            <Text style={[styles.textoVencedor, styles.margemInferior]}>
-              {props.vencedor}
-            </Text>
-
-            {(!props.online) && (
-              <View style={styles.margemInferior}>
-                <Button
-                  title='Reiniciar partida'
-                  onPress={() => props.limpaTabuleiro()}
-                />
-              </View>
-            )}
-          </>
-        )}
-
-        <Text style={styles.margemSuperior}>
-          Vez do {props.jogador}
-        </Text>
-
-        <View style={[styles.linha, styles.linhasHorizontais, styles.margemSuperior]}>
+      <View style={{ alignItems: 'center' }}>
+        <View
+          style={[
+            styles.linha,
+            styles.linhasHorizontais,
+            { marginTop: 20, borderColor: theme.colors.black }
+          ]}
+        >
           <Pressable
             onPress={() => props.handleValidaJogada(0)}
             style={styles.celula}
             disabled={props.desativado}
           >
-            <Text style={[styles.conteudoCelula, { color: props.corCelula[0] }]}>
+            <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(0) }]}>
               {props.celula[0]}
             </Text>
           </Pressable>
 
-          <View style={styles.linhasVerticais}>
+          <View style={[styles.linhasVerticais, { borderColor: theme.colors.black }]}>
             <Pressable
               onPress={() => props.handleValidaJogada(1)}
               style={styles.celula}
               disabled={props.desativado}
             >
-              <Text style={[styles.conteudoCelula, { color: props.corCelula[1] }]}>
+              <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(1) }]}>
                 {props.celula[1]}
               </Text>
             </Pressable>
@@ -70,30 +64,36 @@ export default function Tabuleiro(props) {
             style={styles.celula}
             disabled={props.desativado}
           >
-            <Text style={[styles.conteudoCelula, { color: props.corCelula[2] }]}>
+            <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(2) }]}>
               {props.celula[2]}
             </Text>
           </Pressable>
         </View>
 
-        <View style={[styles.linha, styles.linhasHorizontais]}>
+        <View
+          style={[
+            styles.linha,
+            styles.linhasHorizontais,
+            { borderColor: theme.colors.black }
+          ]}
+        >
           <Pressable
             onPress={() => props.handleValidaJogada(3)}
             style={styles.celula}
             disabled={props.desativado}
           >
-            <Text style={[styles.conteudoCelula, { color: props.corCelula[3] }]}>
+            <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(3) }]}>
               {props.celula[3]}
             </Text>
           </Pressable>
 
-          <View style={styles.linhasVerticais}>
+          <View style={[styles.linhasVerticais, { borderColor: theme.colors.black }]}>
             <Pressable
               onPress={() => props.handleValidaJogada(4)}
               style={styles.celula}
               disabled={props.desativado}
             >
-              <Text style={[styles.conteudoCelula, { color: props.corCelula[4] }]}>
+              <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(4) }]}>
                 {props.celula[4]}
               </Text>
             </Pressable>
@@ -104,7 +104,7 @@ export default function Tabuleiro(props) {
             style={styles.celula}
             disabled={props.desativado}
           >
-            <Text style={[styles.conteudoCelula, { color: props.corCelula[5] }]}>
+            <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(5) }]}>
               {props.celula[5]}
             </Text>
           </Pressable>
@@ -116,18 +116,18 @@ export default function Tabuleiro(props) {
             style={styles.celula}
             disabled={props.desativado}
           >
-            <Text style={[styles.conteudoCelula, { color: props.corCelula[6] }]}>
+            <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(6) }]}>
               {props.celula[6]}
             </Text>
           </Pressable>
 
-          <View style={styles.linhasVerticais}>
+          <View style={[styles.linhasVerticais, { borderColor: theme.colors.black }]}>
             <Pressable
               onPress={() => props.handleValidaJogada(7)}
               style={styles.celula}
               disabled={props.desativado}
             >
-              <Text style={[styles.conteudoCelula, { color: props.corCelula[7] }]}>
+              <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(7) }]}>
                 {props.celula[7]}
               </Text>
             </Pressable>
@@ -138,12 +138,11 @@ export default function Tabuleiro(props) {
             style={styles.celula}
             disabled={props.desativado}
           >
-            <Text style={[styles.conteudoCelula, { color: props.corCelula[8] }]}>
+            <Text style={[styles.conteudoCelula, { color: obterCorPorIndice(8) }]}>
               {props.celula[8]}
             </Text>
           </Pressable>
         </View>
-
       </View>
     </ScrollView>
   );

@@ -3,63 +3,8 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   containerScrollView: {
     flexGrow: 1,
-    backgroundColor: 'lightgray',
     justifyContent: 'center',
-  },
-
-  container: {
-    flex: 1,
-    backgroundColor: 'lightgray',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  estiloBotao: {
-    paddingBottom: 20,
-  },
-
-  estiloBotaoContainer: {
-    paddingHorizontal: 10,
-  },
-
-  titulo: {
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-
-  textoBoasVindas: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    paddingBottom: 20,
-  },
-
-  containerTelaInicial: {
-    width: '90%',
-    paddingHorizontal: 20,
-  },
-
-  textoVencedor: {
-    color: '#daa520',
-    fontSize: 25,
-    fontWeight: 'bold',
-  },
-
-  placar: {
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-
-  margemInferior: {
-    marginBottom: 15,
-  },
-
-  margemInferiorMenor: {
-    marginBottom: 5,
-  },
-
-  margemSuperior: {
-    marginTop: 15,
+    padding: 10,
   },
 
   linha: {
@@ -90,30 +35,28 @@ const styles = StyleSheet.create({
     fontSize: 75,
   },
 
-  textoDestacado: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    textAlign: 'center',
+  flexRowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
-  centralizaTexto: {
-    textAlign: 'center',
+  flexColumnContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
   },
 
-  input: {
-    borderRadius: 5,
-    width: 100,
-    backgroundColor: 'white',
+  overlayDaModal: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
 
-  inputNormal: {
-    borderWidth: 1,
-    borderColor: 'gray',
-  },
-
-  inputEmFoco: {
-    borderWidth: 3,
-    borderColor: 'black',
+  cardCarregando: {
+    flex: 1,
+    justifyContent: 'center',
+    marginHorizontal: 0,
+    borderRadius: 0,
+    borderWidth: 0,
   },
 });
 

@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, ScrollView, Text, Button, TextInput } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { Button, Card, Icon, Text, Input } from '@rneui/themed';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 import styles from '../../css/styles';
+
+const BANNER_ID = 'ca-app-pub-4878437225305198/5154911335';
 
 export default function Lobby(props) {
   const [codigoDaSala, setCodigoDaSala] = useState('');
@@ -19,7 +23,7 @@ export default function Lobby(props) {
   const handleCriarSala = () => {
     const codigoAleatorio = Math.floor(10000 + Math.random() * 90000).toString();
 
-    props.navigation.navigate('Online', {
+    props.navigation.navigate('Multiplayer (Online)', {
       action: 'create',
       user: 'Jogador X',
       roomCode: codigoAleatorio
@@ -27,13 +31,11 @@ export default function Lobby(props) {
   };
 
   const handleEntrarNaSala = () => {
-    props.navigation.navigate('Online', {
+    props.navigation.navigate('Multiplayer (Online)', {
       action: 'join',
       user: 'Jogador O',
       roomCode: codigoDaSala
     });
-
-    alternarVisibilidadeCamposEntrada();
   };
   //#endregion
 
@@ -42,83 +44,86 @@ export default function Lobby(props) {
   }, [codigoDaSala]);
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.containerScrollView}
-      keyboardShouldPersistTaps='handled'
-    >
-      <View style={styles.container}>
-
+    <>
+      <ScrollView
+        contentContainerStyle={styles.containerScrollView}
+        keyboardShouldPersistTaps='handled'
+      >
         {(!camposEntradaVisiveis) ? (
           <>
-            <Text style={[styles.textoDestacado, styles.margemInferiorMenor]}>
-              O criador da sala será o Jogador X.
-            </Text>
+            <Card containerStyle={{ marginBottom: 15 }}>
+              <Card.Title>INSTRUCTIONS</Card.Title>
 
-            <Text style={[styles.textoDestacado, styles.margemInferiorMenor]}>
-              Quem entrar na sala será o Jogador O.
-            </Text>
+              <Card.Divider />
 
-            <View style={[styles.margemSuperior, styles.containerTelaInicial]}>
-              <View style={styles.estiloBotao}>
-                <Button
-                  title='Criar uma sala'
-                  onPress={handleCriarSala}
-                />
-              </View>
+              <Text centered noPaddingTop>
+                The creator of the room will be Player X.
+              </Text>
 
-              <View>
-                <Button
-                  title='Entrar em uma sala'
-                  onPress={alternarVisibilidadeCamposEntrada}
-                />
-              </View>
-            </View>
+              <Text centered>
+                The user who joins the room will be Player O.
+              </Text>
+            </Card>
+
+            <Button onPress={handleCriarSala} noPaddingTop>
+              <Icon name='plus-circle' type='feather' /> CREATE A ROOM
+            </Button>
+
+            <Button onPress={alternarVisibilidadeCamposEntrada}>
+              <Icon name='arrow-right-circle' type='feather' /> JOIN A ROOM
+            </Button>
           </>
         ) : (
-          <View>
-            <View style={[styles.linha, styles.margemInferiorMenor]}>
-              <Text style={styles.textoDestacado}>
-                Qual é o código da sala?
-              </Text>
-            </View>
+          <Card>
+            <Card.Title>JOIN ROOM</Card.Title>
 
-            <View style={[styles.linha, styles.margemInferiorMenor]}>
-              <TextInput
-                textAlign='center'
-                keyboardType='number-pad'
-                maxLength={5}
-                value={codigoDaSala}
-                onChangeText={setCodigoDaSala}
-                style={[
-                  styles.input,
-                  (inputEmFoco) ? styles.inputEmFoco : styles.inputNormal
-                ]}
-                onFocus={() => setInputEmFoco(true)}
-                onBlur={() => setInputEmFoco(false)}
+            <Card.Divider />
+
+            <Input
+              placeholder='Enter the room code'
+              keyboardType='number-pad'
+              maxLength={8}
+              value={codigoDaSala}
+              onChangeText={(e) => {
+                setCodigoDaSala(e);
+                setBotaoDesativado(!e);
+              }}
+              onFocus={() => setInputEmFoco(true)}
+              onBlur={() => setInputEmFoco(false)}
+              renderErrorMessage={false}
+              focused={inputEmFoco}
+            />
+
+            <Card.Divider footer />
+
+            <View style={styles.flexRowContainer}>
+              <Button
+                title='CANCEL'
+                color='secondary'
+                onPress={alternarVisibilidadeCamposEntrada}
+                halfWidth
+                noPaddingTop
+              />
+
+              <Button
+                title='OK'
+                disabled={botaoDesativado}
+                onPress={handleEntrarNaSala}
+                halfWidth
+                noPaddingTop
               />
             </View>
-
-            <View style={[styles.linha, styles.margemSuperior]}>
-              <View style={styles.estiloBotaoContainer}>
-                <Button
-                  title='Cancelar'
-                  onPress={alternarVisibilidadeCamposEntrada}
-                  color='red'
-                />
-              </View>
-
-              <View style={styles.estiloBotaoContainer}>
-                <Button
-                  title='Entrar'
-                  onPress={handleEntrarNaSala}
-                  disabled={botaoDesativado}
-                />
-              </View>
-            </View>
-          </View>
+          </Card>
         )}
+      </ScrollView>
 
-      </View>
-    </ScrollView>
+      <BannerAd
+        unitId={(__DEV__) ? TestIds.BANNER : BANNER_ID}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true
+        }}
+      />
+    </>
   );
 }

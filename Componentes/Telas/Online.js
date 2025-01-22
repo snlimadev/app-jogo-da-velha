@@ -1,8 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, Button, Share, Modal } from 'react-native';
+import { Modal, BackHandler } from 'react-native';
+import { Card, Button, Text } from '@rneui/themed';
+import { showMessage } from 'react-native-flash-message';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
-import styles from '../../css/styles';
+import CardAguardandoOponente from '../CardAguardandoOponente';
 import Tabuleiro from '../Tabuleiro';
+import ModalResultadoDoJogo from '../ModalResultadoDoJogo';
+import styles from '../../css/styles';
 
 import {
   validaJogada,
@@ -13,6 +18,8 @@ import {
   fazerJogada,
   handleRodadasDoJogo
 } from '../Funcoes';
+
+const BANNER_ID = 'ca-app-pub-4878437225305198/2521009130';
 
 export default function Online(props) {
   const [celula, setCelula] = useState(Array(9).fill(''));
@@ -29,29 +36,22 @@ export default function Online(props) {
   const [jogadorAtual, setJogadorAtual] = useState('');
   const [jogadaAtual, setJogadaAtual] = useState('');
   const [desativado, setDesativado] = useState(true);
+  const [jogoAcabou, setJogoAcabou] = useState(false);
+  const [textoDaModal, setTextoDaModal] = useState('');
+  const [modalVisivel, setModalVisivel] = useState(false);
 
   const ws = useMemo(() => new WebSocket('wss://api-basic-temporary-chat.glitch.me'), []);
   const { action, user, roomCode } = props.route.params;
   const navigate = props.navigation.navigate;
 
   //#region Funções locais
-  const compartilhar = async () => {
-    try {
-      await Share.share({
-        message: `O código da sala para o Jogo da Velha é ${roomCode}`
-      });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
   const handleCriarOuEntrarNaSala = () => {
     criarOuEntrarNaSala(action, user, roomCode, ws);
     setCarregando(false);
   };
 
   const handleFazerJogada = (jogada) => {
-    if (celula[jogada] === '') {
+    if (celula[jogada] === '' && jogador === user) {
       setDesativado(true);
       fazerJogada(jogada.toString(), ws, readyState);
     }
@@ -63,8 +63,14 @@ export default function Online(props) {
       setJogoComecou,
       setJogadorAtual,
       setJogadaAtual,
+      setJogoAcabou,
       navigate
     );
+  };
+
+  const handleBotaoVoltar = () => {
+    navigate('Home');
+    return true;
   };
 
   const limpaTabuleiro = () => {
@@ -97,10 +103,39 @@ export default function Online(props) {
   }, [jogador, jogoComecou]);
 
   useEffect(() => {
-    if (jogadorAtual && jogadaAtual) {
+    if (jogadorAtual === jogador && jogadaAtual) {
       validaJogada(celula, jogadaAtual, setCelula, jogadorAtual, setJogador, fimDaPartida);
     }
-  }, [jogadorAtual, jogadaAtual]);
+  }, [jogadaAtual]);
+
+  useEffect(() => {
+    if (jogoAcabou) {
+      showMessage({
+        message: 'Opponent left. Final score:',
+        description: `Player X ${pontuacaoJogadorX} vs ${pontuacaoJogadorO} Player O` +
+          `\n${empates} Draws`,
+        type: 'info',
+        icon: 'info',
+        duration: 5000
+      });
+
+      navigate('Home');
+    }
+  }, [jogoAcabou]);
+
+  useEffect(() => {
+    if (textoDaModal) {
+      setModalVisivel(true);
+    }
+  }, [textoDaModal]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBotaoVoltar);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBotaoVoltar);
+    };
+  }, [props.navigation]);
 
   useEffect(() => {
     if (!celula.every(str => str === '')) {
@@ -115,13 +150,20 @@ export default function Online(props) {
       setJogadaAtual('');
       alteraPontuacao(vencedor, setPontuacaoJogadorX, setPontuacaoJogadorO, setEmpates);
 
+      if (vencedor === 'Empate') {
+        setTextoDaModal('Draw');
+      } else {
+        let jogadorVenceu = vencedor.replace('Vencedor: ', '') === user;
+        setTextoDaModal((jogadorVenceu) ? 'You win' : 'You lose');
+      }
+
       const limpaTabuleiroTimeout = setTimeout(() => {
         limpaTabuleiro();
 
         if (jogador === user) {
           setDesativado(false);
         }
-      }, 2500);
+      }, 250);
 
       return () => {
         clearTimeout(limpaTabuleiroTimeout);
@@ -132,32 +174,20 @@ export default function Online(props) {
 
   return (
     <>
-      <Modal visible={carregando} onRequestClose={() => null}>
-        <View style={styles.container}>
-          <Text style={styles.textoDestacado}>
-            Conectando-se ao servidor...
-          </Text>
-        </View>
-      </Modal>
-
       {(!jogoComecou) ? (
-        <View style={styles.container}>
-          <Text>O código da sala é</Text>
+        <>
+          <CardAguardandoOponente codigoDaSala={roomCode} />
 
-          <Text style={[styles.placar, styles.margemInferior]} selectable>
-            {roomCode}
-          </Text>
-
-          <Text style={[styles.margemInferiorMenor, styles.centralizaTexto]}>
-            Compartilhe-o com um amigo e comece a jogar!
-          </Text>
-
-          <Text style={[styles.margemInferior, styles.centralizaTexto]}>
-            Sua sessão vai expirar em 3 minutos se ninguém entar na sala.
-          </Text>
-
-          <Button title='Compartilhar' onPress={compartilhar} />
-        </View>
+          {(action === 'create' && !carregando) && (
+            <BannerAd
+              unitId={(__DEV__) ? TestIds.BANNER : BANNER_ID}
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true
+              }}
+            />
+          )}
+        </>
       ) : (
         <Tabuleiro
           celula={celula}
@@ -174,6 +204,20 @@ export default function Online(props) {
           online={true}
         />
       )}
+
+      <ModalResultadoDoJogo
+        modalVisivel={modalVisivel}
+        setModalVisivel={setModalVisivel}
+        textoDaModal={textoDaModal}
+        setTextoDaModal={setTextoDaModal}
+      />
+
+      <Modal visible={carregando} onRequestClose={() => null}>
+        <Card containerStyle={styles.cardCarregando}>
+          <Text bold centered noPaddingTop>CONNECTING...</Text>
+          <Button type='clear' loading disabled noPaddingTop />
+        </Card>
+      </Modal>
     </>
   );
 }

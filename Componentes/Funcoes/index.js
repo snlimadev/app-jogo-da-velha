@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 
 const conjuntosVencedores = [
   [0, 1, 2],
@@ -191,15 +191,18 @@ export function handleEventosWebSocket(
 
     ws.onclose = () => {
       setReadyState('CLOSED');
-      navigate('Crie/entre em uma sala');
     };
 
     ws.onerror = () => {
-      Alert.alert(
-        'A conexão com o servidor foi perdida ou expirou',
-        'Por favor, verifique sua conexão com a internet ' +
-        'e tente novamente mais tarde.'
-      );
+      showMessage({
+        message: 'Connection to the server lost or expired',
+        description: 'Please check your internet connection and try again later.',
+        type: 'danger',
+        icon: 'danger',
+        duration: 5000
+      });
+
+      navigate('Home');
     };
 
     ws.onmessage = (e) => {
@@ -236,6 +239,7 @@ export function handleRodadasDoJogo(
   setJogoComecou,
   setJogadorAtual,
   setJogadaAtual,
+  setJogoAcabou,
   navigate
 ) {
   try {
@@ -251,23 +255,20 @@ export function handleRodadasDoJogo(
     } else if (evento) {
       if (evento === 'Jogador O joined the room') {
         setJogoComecou(true);
+        showMessage({ message: 'Game starts!', type: 'info', icon: 'info' });
       } else if (evento.endsWith('left the room')) {
-        Alert.alert(
-          'Aviso',
-          'O adversário saiu do jogo.'
-        );
-
-        navigate('Crie/entre em uma sala');
+        setJogoAcabou(true);
       }
     } else if (erro) {
-      Alert.alert(
-        'A conexão com o servidor foi perdida ou expirou',
-        'Por favor, verifique sua conexão com a internet ' +
-        'e tente novamente mais tarde.\n\n' +
-        'Detalhes do erro: ' + erro
-      );
+      showMessage({
+        message: 'Error',
+        description: erro,
+        type: 'danger',
+        icon: 'danger',
+        duration: 5000
+      });
 
-      navigate('Crie/entre em uma sala');
+      navigate('Home');
     }
   } catch (error) {
     console.error('Erro: ', error);
