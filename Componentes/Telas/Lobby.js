@@ -21,12 +21,19 @@ export default function Lobby(props) {
   };
 
   const handleCriarSala = () => {
-    const codigoAleatorio = Math.floor(10000 + Math.random() * 90000).toString();
+    const codigoAleatorio = Math.floor(1000 + Math.random() * 9000);
+
+    const horario = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(new Date()).replace(':', '');
 
     props.navigation.navigate('Multiplayer (Online)', {
       action: 'create',
       user: 'Jogador X',
-      roomCode: codigoAleatorio
+      roomCode: String(codigoAleatorio) + String(horario)
     });
   };
 

@@ -150,14 +150,14 @@ export default function Online(props) {
       setJogadaAtual('');
       alteraPontuacao(vencedor, setPontuacaoJogadorX, setPontuacaoJogadorO, setEmpates);
 
-      if (vencedor === 'Empate') {
-        setTextoDaModal('Draw');
-      } else {
-        let jogadorVenceu = vencedor.replace('Vencedor: ', '') === user;
-        setTextoDaModal((jogadorVenceu) ? 'You win' : 'You lose');
-      }
-
       const limpaTabuleiroTimeout = setTimeout(() => {
+        if (vencedor === 'Empate') {
+          setTextoDaModal('Draw');
+        } else {
+          let jogadorVenceu = vencedor.replace('Vencedor: ', '') === user;
+          setTextoDaModal((jogadorVenceu) ? 'You win' : 'You lose');
+        }
+
         limpaTabuleiro();
 
         if (jogador === user) {
