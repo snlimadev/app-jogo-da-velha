@@ -91,13 +91,11 @@ const temaPersonalizado = createTheme({
     }),
 
     Icon: (props, theme) => ({
-      style: (props.topBar) && {
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-      },
+      style: (props.topBar) ? {
+        padding: 4,
+      } : undefined,
       containerStyle: (props.topBar) && {
         borderRadius: 20,
-        paddingHorizontal: 6,
       },
       color:
         (props.disabled)

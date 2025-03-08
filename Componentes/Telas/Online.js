@@ -163,7 +163,7 @@ export default function Online(props) {
         if (jogador === user) {
           setDesativado(false);
         }
-      }, 250);
+      }, 500);
 
       return () => {
         clearTimeout(limpaTabuleiroTimeout);
