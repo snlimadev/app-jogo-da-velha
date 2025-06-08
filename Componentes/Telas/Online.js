@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Modal, BackHandler } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { Modal, BackHandler, AppState, Platform } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
 import { showMessage } from 'react-native-flash-message';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
@@ -32,28 +32,43 @@ export default function Online(props) {
   const [fimDaPartida, setFimDaPartida] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [jogoComecou, setJogoComecou] = useState(false);
-  const [readyState, setReadyState] = useState('CONNECTING');
   const [jogadorAtual, setJogadorAtual] = useState('');
   const [jogadaAtual, setJogadaAtual] = useState('');
   const [desativado, setDesativado] = useState(true);
   const [jogoAcabou, setJogoAcabou] = useState(false);
   const [textoDaModal, setTextoDaModal] = useState('');
   const [modalVisivel, setModalVisivel] = useState(false);
+  const [appState, setAppState] = useState(AppState.currentState);
 
-  const ws = useMemo(() => new WebSocket('wss://api-basic-temporary-chat.glitch.me'), []);
+  const ws = useRef(null);
   const { action, user, roomCode } = props.route.params;
   const navigate = props.navigation.navigate;
 
   //#region Funções locais
+  const handleConectar = () => {
+    if (!ws.current) {
+      setCarregando(true);
+      ws.current = new WebSocket('wss://api-basic-temporary-chat.onrender.com');
+      handleEventosWebSocket(ws.current, handleCriarOuEntrarNaSala, handleJogadas, navigate);
+    }
+  };
+
+  const handleDesconectar = () => {
+    if (ws.current) {
+      ws.current.close();
+      ws.current = null;
+    }
+  };
+
   const handleCriarOuEntrarNaSala = () => {
-    criarOuEntrarNaSala(action, user, roomCode, ws);
+    criarOuEntrarNaSala(action, user, roomCode, ws.current);
     setCarregando(false);
   };
 
   const handleFazerJogada = (jogada) => {
     if (celula[jogada] === '' && jogador === user) {
       setDesativado(true);
-      fazerJogada(jogada.toString(), ws, readyState);
+      fazerJogada(jogada.toString(), ws.current);
     }
   };
 
@@ -83,20 +98,29 @@ export default function Online(props) {
 
   //#region Hooks useEffect
   useEffect(() => {
-    handleEventosWebSocket(
-      ws,
-      setReadyState,
-      handleCriarOuEntrarNaSala,
-      handleJogadas,
-      navigate
-    );
-
     return () => {
-      if (ws && readyState === 'OPEN') {
-        ws.close();
-      }
+      handleDesconectar();
     };
-  }, [readyState]);
+  }, []);
+
+  useEffect(() => {
+    if (appState === 'active') {
+      handleConectar();
+    } else if (Platform.OS === 'android' && Platform.Version >= 35) {
+      handleDesconectar();
+      limpaTabuleiro();
+      setJogador('Jogador X');
+      setPontuacaoJogadorX(0);
+      setPontuacaoJogadorO(0);
+      setEmpates(0);
+      setJogoComecou(false);
+      setJogadorAtual('');
+      setJogadaAtual('');
+      setDesativado(true);
+      setTextoDaModal('');
+      setModalVisivel(false);
+    }
+  }, [appState]);
 
   useEffect(() => {
     (jogador === user && jogoComecou) ? setDesativado(false) : setDesativado(true);
@@ -138,19 +162,31 @@ export default function Online(props) {
   }, [props.navigation]);
 
   useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!celula.every(str => str === '')) {
       validaResultado(celula, setVencedor, setFimDaPartida, corCelula, setCorCelula);
     }
   }, [celula]);
 
   useEffect(() => {
+    let limpaTabuleiroTimeout;
+
     if (vencedor) {
       setDesativado(true);
       setJogadorAtual('');
       setJogadaAtual('');
       alteraPontuacao(vencedor, setPontuacaoJogadorX, setPontuacaoJogadorO, setEmpates);
 
-      const limpaTabuleiroTimeout = setTimeout(() => {
+      limpaTabuleiroTimeout = setTimeout(() => {
         if (vencedor === 'Empate') {
           setTextoDaModal('Draw');
         } else {
@@ -164,11 +200,11 @@ export default function Online(props) {
           setDesativado(false);
         }
       }, 500);
-
-      return () => {
-        clearTimeout(limpaTabuleiroTimeout);
-      };
     }
+
+    return () => {
+      clearTimeout(limpaTabuleiroTimeout);
+    };
   }, [vencedor]);
   //#endregion
 

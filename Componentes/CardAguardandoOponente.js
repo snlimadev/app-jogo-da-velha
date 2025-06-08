@@ -7,7 +7,7 @@ import styles from '../css/styles';
 
 export default function CardAguardandoOponente(props) {
   const codigo = props.codigoDaSala;
-  const texto = `Room code for Tic-Tac-Toe - Online is ${codigo}`;
+  const texto = `The room code for Tic-Tac-Toe - Online is ${codigo}`;
 
   //#region Funções locais
   const copiar = async () => {
@@ -37,7 +37,7 @@ export default function CardAguardandoOponente(props) {
 
         <Text selectable centered noPaddingTop>
           The room code is <Text bold>{codigo}</Text>. Please note your session
-          will expire in 3 minutes if an opponent doesn't join the game.
+          will expire in a few minutes if an opponent doesn't join the game.
         </Text>
 
         <Button type='outline' size='sm' info onPress={copiar}>

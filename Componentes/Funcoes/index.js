@@ -178,20 +178,16 @@ export function fazJogadaDoComputador(celula, setCelula, jogador, setJogador, fi
 //#region Funções do modo online
 export function handleEventosWebSocket(
   ws,
-  setReadyState,
   handleCriarOuEntrarNaSala,
   handleJogadas,
   navigate
 ) {
   if (ws) {
     ws.onopen = () => {
-      setReadyState('OPEN');
       handleCriarOuEntrarNaSala();
     };
 
-    ws.onclose = () => {
-      setReadyState('CLOSED');
-    };
+    ws.onclose = () => { };
 
     ws.onerror = () => {
       showMessage({
@@ -219,18 +215,18 @@ export function criarOuEntrarNaSala(action, user, roomCode, ws) {
     maxClients: 2
   };
 
-  ws.send(JSON.stringify(mensagem));
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(mensagem));
+  }
 };
 
-export function fazerJogada(jogada, ws, readyState) {
-  if (readyState === 'OPEN') {
-    const mensagem = {
-      text: jogada
-    };
+export function fazerJogada(jogada, ws) {
+  const mensagem = {
+    text: jogada
+  };
 
-    if (ws) {
-      ws.send(JSON.stringify(mensagem));
-    }
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(mensagem));
   }
 };
 
