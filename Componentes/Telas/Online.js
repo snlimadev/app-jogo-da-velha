@@ -135,7 +135,7 @@ export default function Online(props) {
   useEffect(() => {
     if (jogoAcabou) {
       showMessage({
-        message: 'Opponent left. Final score:',
+        message: 'Opponent left.\nFinal score:',
         description: `Player X ${pontuacaoJogadorX} vs ${pontuacaoJogadorO} Player O` +
           `\n${empates} Draws`,
         type: 'info',
