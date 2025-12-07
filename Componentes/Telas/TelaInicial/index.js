@@ -58,8 +58,8 @@ export default function TelaInicial(props) {
         <Text centered>
           <Text noPaddingTop>You may also like our other online games, </Text>
 
-          <Pressable onPress={() => handleAbrirURL('com.snlimadev.battleship')}>
-            <Text primary bold underline noPaddingTop>Battleship</Text>
+          <Pressable onPress={() => handleAbrirURL('com.snlimadev.battlefleet')}>
+            <Text primary bold underline noPaddingTop>Battlefleet</Text>
           </Pressable>
 
           <Text noPaddingTop> and </Text>
